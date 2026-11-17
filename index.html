@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>多位數的近似值 - 香港小學數學</title>
+  <!-- 引入 html2canvas 程式庫以支援報告圖片下載 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* 全局樣式與 iPad 觸控優化 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      touch-action: manipulation;
+    }
+
+    /* 頂部導覽列 */
+    header {
+      background-color: #2b5278;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .lang-btn {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .lang-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #2b5278;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    /* 首頁選單網格 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .card:hover, .card:active {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: #4a90e2;
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      color: #1a365d;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #666;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    /* 練習界面 */
+    .quiz-wrapper {
+      max-width: 780px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .back-nav-btn {
+      background: white;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .back-nav-btn:hover {
+      background-color: #edf2f7;
+      color: #2b6cb0;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 12px;
+    }
+
+    .quiz-progress {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #3182ce;
+    }
+
+    .unit-tag {
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .level-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .level-easy { background-color: #c6f6d5; color: #22543d; }
+    .level-medium { background-color: #feebc8; color: #744210; }
+    .level-hard { background-color: #fed7d7; color: #9b2c2c; }
+
+    .question-display {
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .question-prompt {
+      font-size: 1.45rem;
+      color: #2d3748;
+      font-weight: bold;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    
+    .question-number {
+      font-size: 2.2rem;
+      color: #1a365d;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .equation {
+      font-size: 1.6rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 25px 0 20px 0;
+      color: #2d3748;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      font-size: 1.6rem;
+      width: 220px;
+      text-align: center;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 50px;
+      letter-spacing: 1px;
+    }
+
+    .answer-input:focus {
+      border-color: #3182ce;
+    }
+
+    /* 選擇題網格 */
+    .mc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .mc-btn {
+      background: white;
+      border: 2px solid #cbd5e0;
+      padding: 16px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #2d3748;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mc-btn:hover {
+      border-color: #3182ce;
+      background-color: #ebf8ff;
+    }
+
+    .mc-btn.selected-wrong {
+      border-color: #e53e3e;
+      background-color: #fff5f5;
+      color: #c53030;
+    }
+
+    .mc-btn.correct-ans {
+      border-color: #38a169;
+      background-color: #f0fff4;
+      color: #276749;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-align: center;
+      min-height: 48px;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary { background-color: #3182ce; color: white; }
+    .btn-primary:hover { background-color: #2b6cb0; }
+
+    .btn-success { background-color: #38a169; color: white; }
+    .btn-success:hover { background-color: #2f855a; }
+
+    .btn-purple { background-color: #8e44ad; color: white; margin-bottom: 10px; }
+    .btn-purple:hover { background-color: #7d3c98; }
+
+    .btn-sky { background-color: #38bdf8; color: white; margin-bottom: 10px; }
+    .btn-sky:hover { background-color: #0284c7; }
+
+    .btn-gray { background-color: #7f8c8d; color: white; }
+    .btn-gray:hover { background-color: #636e72; }
+
+    /* 反饋與提示訊息 */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 1.05rem;
+    }
+
+    .feedback-success {
+      background-color: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+      text-align: center;
+    }
+
+    .feedback-warning {
+      background-color: #fffaf0;
+      color: #744210;
+      border: 1px solid #fbd38d;
+    }
+
+    .feedback-danger {
+      background-color: #fff5f5;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+
+    /* 解題步驟卡片樣式 */
+    .vertical-solution-card {
+      background-color: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 10px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .solution-header {
+      color: #9b2c2c;
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .solution-sub {
+      color: #744210;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .step-box {
+      background: white;
+      border-left: 4px solid #3182ce;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      font-size: 1.05rem;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+    
+    .high-light-num {
+      color: #e53e3e;
+      font-weight: bold;
+      font-size: 1.15rem;
+      margin: 0 4px;
+    }
+
+    .solution-footer-ans {
+      color: #e53e3e;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 15px;
+      border-top: 1px dashed #feb2b2;
+      padding-top: 10px;
+    }
+
+    .solution-footer-tip {
+      color: #744210;
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    /* 分析報告界面 */
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .report-title {
+      text-align: center;
+      color: #3182ce;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .report-section {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 15px;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .report-row.dashed {
+      border-bottom: 1px dashed #cbd5e0;
+    }
+
+    .report-val { font-weight: bold; }
+    .val-green { color: #276749; }
+    .val-red { color: #9b2c2c; }
+    .val-blue { color: #0284c7; }
+
+    .section-label {
+      font-weight: bold;
+      color: #2d3748;
+      margin: 15px 0 10px 0;
+      font-size: 1rem;
+    }
+
+    .list-box {
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .list-box.correct-bg { background-color: #f7fafc; }
+    .list-box.wrong-bg { background-color: #f7fafc; }
+
+    .list-title {
+      font-weight: bold;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .item-card-correct {
+      background: #f0fff4;
+      border: 1px solid #c6f6d5;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.95rem;
+      color: #22543d;
+      font-weight: 500;
+    }
+
+    .item-card-wrong {
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.95rem;
+      color: #9b2c2c;
+      font-weight: 500;
+    }
+    
+    .item-ans-text { font-size: 0.9rem; opacity: 0.9; }
+
+    /* Modal 彈窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-box h3 { margin-bottom: 12px; color: #2b5278; }
+    .modal-box p { margin-bottom: 20px; color: #4a5568; line-height: 1.5; }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      .quiz-card { padding: 25px 20px; }
+      .question-prompt { font-size: 1.25rem; }
+      .question-number { font-size: 1.8rem; }
+      .equation { font-size: 1.4rem; }
+      .answer-input { font-size: 1.4rem; width: 180px; }
+      .mc-btn { font-size: 1.1rem; padding: 12px; }
+      .mc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header>
+    <h1 id="header-title">多位數的近似值</h1>
+    <button id="lang-toggle-btn" class="lang-btn" onclick="toggleLanguage()">English</button>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- 1. 首頁選擇界面 -->
+      <div id="page-home">
+        <h2 id="home-subtitle" class="page-title">請選擇學習單元</h2>
+        <div class="menu-grid">
+          <div class="card" role="button" tabindex="0" onclick="startQuiz('unit1')">
+            <h3 id="u1-title">單元一：四捨五入</h3>
+            <p id="u1-desc">學習將多位數（十萬位至億位）運用四捨五入法取近似值，包含判斷進位條件、反推取值位值，以及推算真實數值範圍。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 答題界面 -->
+      <div id="page-quiz" class="hidden">
+        <div class="quiz-wrapper">
+          <button class="back-nav-btn" onclick="askReturnHome()">
+            <span id="lbl-back-btn">← 返回單元選擇</span>
+          </button>
+
+          <div class="quiz-card">
+            <div class="quiz-header">
+              <div>
+                <span id="quiz-mode-name" class="unit-tag">四捨五入</span>
+                <span id="quiz-level-badge" class="level-badge hidden">初階</span>
+              </div>
+              <span id="quiz-progress-text" class="quiz-progress">題目 1 / 10</span>
+            </div>
+
+            <div class="question-display">
+              <div id="question-prompt-text" class="question-prompt">將以下數值取近似值：</div>
+              <div id="question-number-display" class="question-number hidden"></div>
+            </div>
+
+            <!-- 輸入框模式 -->
+            <div id="input-mode-area" class="equation hidden">
+              <span id="input-prefix-label">答案：</span>
+              <input type="text" id="answer-input" class="answer-input" placeholder="0" autocomplete="off" inputmode="numeric" onkeypress="handleKeyPress(event)">
+            </div>
+
+            <!-- 選擇題模式 -->
+            <div id="mc-mode-area" class="mc-grid hidden">
+              <!-- 按鈕由 JS 動態生成 -->
+            </div>
+
+            <div id="action-area" style="margin-top: 15px;">
+              <button id="btn-submit" class="btn btn-primary" onclick="checkInputAnswer()">提交答案</button>
+              <button id="btn-next" class="btn btn-success hidden" onclick="nextQuestion()">下一題 ➔</button>
+            </div>
+
+            <div id="feedback-area" class="hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 表現分析報告 -->
+      <div id="page-report" class="hidden">
+        <div id="report-card-to-capture" class="report-card">
+          <h2 id="report-main-title" class="report-title">練習完成！表現分析報告</h2>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-start-time">開始時間：</span>
+              <span id="val-start-time" class="report-val">--</span>
+            </div>
+            <div class="report-row dashed">
+              <span id="lbl-end-time">完成時間：</span>
+              <span id="val-end-time" class="report-val">--</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-duration">總用時：</span>
+              <span id="val-duration" class="report-val val-blue">--</span>
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-total-correct">總答對題數：</span>
+              <span id="val-correct-count" class="report-val val-green">0 / 10</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-accuracy">整體正確率：</span>
+              <span id="val-accuracy" class="report-val">0%</span>
+            </div>
+          </div>
+
+          <div class="section-label" id="lbl-mastery-title">單元掌握度分析</div>
+          <div class="report-section">
+            <div class="report-row">
+              <span id="report-unit-name">1. 四捨五入</span>
+              <span id="val-unit-mastery" class="report-val">0 / 10 (0%)</span>
+            </div>
+          </div>
+
+          <div class="list-box correct-bg">
+            <div class="list-title val-green">
+              <span>☑</span> <span id="lbl-correct-title">答對的題目</span>
+            </div>
+            <div id="correct-list-container"></div>
+          </div>
+
+          <div class="list-box wrong-bg">
+            <div class="list-title val-red">
+              <span>✕</span> <span id="lbl-wrong-title">答錯 / 需要協助的題目</span>
+            </div>
+            <div id="wrong-list-container"></div>
+          </div>
+
+          <div data-html2canvas-ignore="true" style="margin-top: 20px;">
+            <button class="btn btn-purple" onclick="downloadReportImage()"><span id="lbl-btn-download">💾 下載報告圖片</span></button>
+            <button class="btn btn-sky" onclick="retryPractice()"><span id="lbl-btn-retry">🔄 我想再試</span></button>
+            <button class="btn btn-gray" onclick="goHome()"><span id="lbl-btn-home">回到主頁重新選擇</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 通用 Modal -->
+  <div id="custom-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="modal-title">提示</h3>
+      <p id="modal-msg">內容訊息</p>
+      <div class="modal-buttons">
+        <button id="modal-cancel-btn" class="btn btn-gray" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button id="modal-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="confirmModalAction()">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'zh';
+    let currentMode = null;
+    let currentQIndex = 0;
+    let questions = [];
+    let records = [];
+    let wrongAttempts = 0;
+    let startTimeObj = null;
+    let modalActionCallback = null;
+    let currentSelectedMCOption = null;
+
+    const placeDataZh = [
+      { name: '個位', val: 1 },
+      { name: '十位', val: 10 },
+      { name: '百位', val: 100 },
+      { name: '千位', val: 1000 },
+      { name: '萬位', val: 10000 },
+      { name: '十萬位', val: 100000 },
+      { name: '百萬位', val: 1000000 },
+      { name: '千萬位', val: 10000000 },
+      { name: '億位', val: 100000000 }
+    ];
+
+    const placeDataEn = [
+      { name: 'Ones', val: 1 },
+      { name: 'Tens', val: 10 },
+      { name: 'Hundreds', val: 100 },
+      { name: 'Thousands', val: 1000 },
+      { name: 'Ten Thousands', val: 10000 },
+      { name: 'Hundred Thousands', val: 100000 },
+      { name: 'Millions', val: 1000000 },
+      { name: 'Ten Millions', val: 10000000 },
+      { name: 'Hundred Millions', val: 100000000 }
+    ];
+
+    const i18n = {
+      zh: {
+        appTitle: '多位數的近似值',
+        homeSubtitle: '請選擇學習單元',
+        u1Title: '單元一：四捨五入',
+        u1Desc: '學習將多位數（十萬位至億位）運用四捨五入法取近似值，包含判斷進位條件、反推取值位值，以及推算真實數值範圍。',
+        backBtn: '← 返回單元選擇',
+        qProgress: '題目',
+        lvlEasy: '初階',
+        lvlMed: '中階',
+        lvlHard: '高階',
+        inputPrefixAns: '答案：',
+        submitBtn: '提交答案',
+        nextBtn: '下一題 ➔',
+        praise: ['太棒了！答對了！', '非常出色！判斷完全正確！', '答得好！邏輯非常清晰！', '完全正確！太厲害了！'],
+        encourage: ['再仔細想一想，留意看哪個位值的數字！', '差一點點，記得四捨五入的規則喔！', '沒關係，重新觀察一次數字的變化！'],
+        hintEasyCalc: '提示：找到指定的位值，觀察它右邊一位的數字是否需要進位（5或以上進1，4或以下捨去）。',
+        hintEasyPlace: '提示：比較原來的數值和近似值，看看從哪一個位值開始，右邊的數字全變成了 0。',
+        hintMedCalc: '提示：留意進位！如果右邊一位是 5 或以上，指定的位值就要加 1；如果指定的位值本來是 9，加 1 後會再向左進位喔！',
+        hintHard: '提示：想一想，如果一個數取近似值後是這個結果，它的真實範圍應該介乎甚麼數字之間？',
+        solutionTitle: '📘 題解思路',
+        solutionSubCalc: '四捨五入法步驟：',
+        solutionSubPlace: '尋找位值的方法：',
+        solutionSubHard: '推算真實範圍的方法：',
+        correctAnsIs: '正確答案為：',
+        footerTip: '看懂題解後，請點擊下一題繼續練習！',
+        reportTitle: '練習完成！表現分析報告',
+        startTime: '開始時間：',
+        endTime: '完成時間：',
+        durationTime: '總用時：',
+        totalCorrect: '總答對題數：',
+        accuracy: '整體正確率：',
+        masteryTitle: '單元掌握度分析',
+        correctTitle: '答對的題目',
+        wrongTitle: '答錯 / 需要協助的題目',
+        noCorrect: '暫無第一次即答對的題目。',
+        noWrong: '太厲害了！完全沒有答錯的題目！',
+        questionLabel: '第 {n} 題',
+        ansLabel: '正確答案',
+        yourAnsLabel: '你的首次回答',
+        btnDownload: '💾 下載報告圖片',
+        btnRetry: '🔄 我想再試',
+        btnHome: '回到主頁重新選擇',
+        modalReturnTitle: '返回主頁提示',
+        modalReturnMsg: '離開將會重置目前的答題進度，確定要返回嗎？',
+        modalCancel: '取消',
+        modalStart: '確定'
+      },
+      en: {
+        appTitle: 'Approximation of Numbers',
+        homeSubtitle: 'Please Select a Learning Unit',
+        u1Title: 'Unit 1: Rounding',
+        u1Desc: 'Learn to round large numbers (Hundred Thousands to Hundred Millions), identify rounding places, and estimate actual number ranges.',
+        backBtn: '← Back to Menu',
+        qProgress: 'Question',
+        lvlEasy: 'Easy',
+        lvlMed: 'Medium',
+        lvlHard: 'Hard',
+        inputPrefixAns: 'Answer:',
+        submitBtn: 'Submit Answer',
+        nextBtn: 'Next Question ➔',
+        praise: ['Excellent! Correct!', 'Great job! Perfect judgment!', 'Well done! Keep it up!', 'Awesome! You got it right!'],
+        encourage: ['Look closely at the digit to the right!', 'Almost there, remember the rounding rules!', 'Don\'t worry, check the changes in digits again!'],
+        hintEasyCalc: 'Hint: Find the specified place value, check the digit to its right (round up if 5 or more, round down if 4 or less).',
+        hintEasyPlace: 'Hint: Compare the original and rounded numbers. At which place value do all the digits to the right become 0?',
+        hintMedCalc: 'Hint: Watch out for carrying! If the digit to the right is >= 5, add 1. If the current digit is 9, it carries over to the left!',
+        hintHard: 'Hint: If a number is rounded to this value, what is the minimum and maximum possible original value?',
+        solutionTitle: '📘 Solution Explanation',
+        solutionSubCalc: 'Rounding Steps:',
+        solutionSubPlace: 'Finding the Place Value:',
+        solutionSubHard: 'Estimating the Range:',
+        correctAnsIs: 'Correct Answer: ',
+        footerTip: 'Review the explanation, then click Next Question!',
+        reportTitle: 'Practice Complete! Performance Report',
+        startTime: 'Start Time:',
+        endTime: 'End Time:',
+        durationTime: 'Total Duration:',
+        totalCorrect: 'Total Correct:',
+        accuracy: 'Overall Accuracy:',
+        masteryTitle: 'Unit Mastery Analysis',
+        correctTitle: 'Correct Questions',
+        wrongTitle: 'Incorrect / Needs Improvement',
+        noCorrect: 'No questions answered correctly on first try.',
+        noWrong: 'Awesome! Perfect score with zero mistakes!',
+        questionLabel: 'Q{n}',
+        ansLabel: 'Correct Ans',
+        yourAnsLabel: 'Your 1st Try',
+        btnDownload: '💾 Download Report Image',
+        btnRetry: '🔄 Try Again',
+        btnHome: 'Back to Home Menu',
+        modalReturnTitle: 'Return to Home',
+        modalReturnMsg: 'Leaving will reset your current practice progress. Are you sure?',
+        modalCancel: 'Cancel',
+        modalStart: 'Confirm'
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+      document.getElementById('lang-toggle-btn').innerText = (currentLang === 'zh') ? 'English' : '中文';
+      
+      document.getElementById('header-title').innerText = i18n[currentLang].appTitle;
+      document.getElementById('home-subtitle').innerText = i18n[currentLang].homeSubtitle;
+      document.getElementById('u1-title').innerText = i18n[currentLang].u1Title;
+      document.getElementById('u1-desc').innerText = i18n[currentLang].u1Desc;
+      document.getElementById('lbl-back-btn').innerText = i18n[currentLang].backBtn;
+
+      if (!document.getElementById('page-quiz').classList.contains('hidden')) {
+        document.getElementById('input-prefix-label').innerText = i18n[currentLang].inputPrefixAns;
+        document.getElementById('btn-submit').innerText = i18n[currentLang].submitBtn;
+        document.getElementById('btn-next').innerText = i18n[currentLang].nextBtn;
+        // 重新載入題目以更新多語言文本
+        const currentQ = questions[currentQIndex];
+        if (currentQ) {
+           updateQuestionText(currentQ);
+           if(currentQ.type === 'mc' && !records[currentQIndex]?.solved && wrongAttempts < 2) {
+              renderMCOptions(currentQ);
+           }
+        }
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnNext = document.getElementById('btn-next');
+        if (!btnSubmit.classList.contains('hidden') && questions[currentQIndex].type === 'calc') {
+          checkInputAnswer();
+        } else if (!btnNext.classList.contains('hidden')) {
+          nextQuestion();
+        }
+      }
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    function getPlaceData() {
+        return currentLang === 'zh' ? placeDataZh : placeDataEn;
+    }
+
+    // Helper: 產生一組數字陣列
+    function generateDigits(length) {
+      const digits = [];
+      digits.push(getRandomInt(1, 9)); // 第一位不能為 0
+      for (let i = 1; i < length; i++) {
+        digits.push(getRandomInt(0, 9));
+      }
+      return digits;
+    }
+
+    // 將數字陣列轉為數字字串
+    function digitsToStr(digits) {
+      return digits.join('');
+    }
+
+    // 四捨五入計算函數 (回傳字串)
+    function roundNumberStr(numStr, placeIndex) {
+      const pData = getPlaceData();
+      const placeVal = pData[placeIndex].val;
+      const num = parseInt(numStr, 10);
+      const rounded = Math.round(num / placeVal) * placeVal;
+      return rounded.toString();
+    }
+
+    // Helper: 檢查 MC 找位值題目的答案是否唯一，避免多個選項得出相同結果
+    function isUniquePlaceAnswer(origStr, targetPlaceIdx, roundedStr) {
+      const optionsIdx = [3, 4, 5, 6, 7, 8];
+      for (let i = 0; i < optionsIdx.length; i++) {
+        let testIdx = optionsIdx[i];
+        if (testIdx !== targetPlaceIdx) {
+          if (roundNumberStr(origStr, testIdx) === roundedStr) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    /* 
+      產生 10 題：
+      初階 4 題 (無進位)： 2題計算(calc), 2題找位值(mc)
+      中階 3 題 (1次進位)： 至少1題計算, 至少1題找位值。這裡設為 2題計算, 1題找位值。
+      高階 3 題 (推算真實數值)：3題MC
+    */
+    function generateQuestions() {
+      const generated = [];
+      const usedNums = new Set();
+      const pData = getPlaceData();
+
+      // --- 初階 (Easy) - 無進位 ---
+      for (let i = 0; i < 4; i++) {
+        let isCalc = i < 2; // 2題calc, 2題mc
+        let created = false;
+        while (!created) {
+          const len = getRandomInt(6, 9); // 6至9位數
+          const digits = generateDigits(len);
+          // 取值至十萬(5) 至 億位(8)。確保位值不超過數字長度。
+          const maxPlaceIdx = Math.min(8, len - 1);
+          if (maxPlaceIdx < 5) continue; 
+          
+          const placeIdx = getRandomInt(5, maxPlaceIdx);
+          
+          // 確保無進位 (四捨五入中捨去尾數)：右邊數字必須 <= 4
+          const rightDigitIdx = len - 1 - (placeIdx - 1);
+          const targetDigitIdx = len - 1 - placeIdx;
+          
+          if (rightDigitIdx >= 0 && rightDigitIdx < len) {
+             digits[rightDigitIdx] = getRandomInt(0, 4);
+          }
+          
+          // 若是第一位數，確保不為0
+          if (targetDigitIdx === 0 && digits[0] === 0) digits[0] = getRandomInt(1, 9);
+
+          const origStr = digitsToStr(digits);
+          if (usedNums.has(origStr)) continue;
+
+          const roundedStr = roundNumberStr(origStr, placeIdx);
+
+          if (isCalc) {
+            usedNums.add(origStr);
+            generated.push({
+              level: 'easy', type: 'calc',
+              originalNum: origStr, roundedNum: roundedStr,
+              placeIdx: placeIdx, ans: roundedStr
+            });
+            created = true;
+          } else {
+             // MC 找位值，確保答案唯一
+             if (!isUniquePlaceAnswer(origStr, placeIdx, roundedStr)) continue;
+             usedNums.add(origStr);
+             let options = [3, 4, 5, 6, 7, 8];
+             generated.push({
+              level: 'easy', type: 'mc', mcType: 'find_place',
+              originalNum: origStr, roundedNum: roundedStr,
+              placeIdx: placeIdx, ans: placeIdx.toString(),
+              optionsIdx: options
+            });
+            created = true;
+          }
+        }
+      }
+
+      // --- 中階 (Medium) - 1次進位 ---
+      for (let i = 0; i < 3; i++) {
+        let isCalc = i < 2; // 2題calc, 1題mc
+        let created = false;
+        while (!created) {
+          const len = getRandomInt(6, 9);
+          const maxPlaceIdx = Math.min(8, len - 1);
+          if (maxPlaceIdx < 5) continue;
+          const placeIdx = getRandomInt(5, maxPlaceIdx);
+          
+          const digits = generateDigits(len);
+          const rightDigitIdx = len - 1 - (placeIdx - 1);
+          const targetDigitIdx = len - 1 - placeIdx;
+          
+          // 強制 1 次進位：
+          // 1. 右邊數字 >= 5 (確保進位)
+          if (rightDigitIdx >= 0 && rightDigitIdx < len) {
+              digits[rightDigitIdx] = getRandomInt(5, 9);
+          }
+          // 2. 目標位數不可為 9 (避免連續進位，且避免產生多重正確答案)
+          if (targetDigitIdx === 0) {
+              digits[targetDigitIdx] = getRandomInt(1, 8);
+          } else {
+              digits[targetDigitIdx] = getRandomInt(0, 8);
+          }
+
+          const origStr = digitsToStr(digits);
+          if (usedNums.has(origStr)) continue;
+
+          const roundedStr = roundNumberStr(origStr, placeIdx);
+          
+          // Double check: 最大只可是9位數
+          if (roundedStr.length > 9) continue;
+
+          if (isCalc) {
+            usedNums.add(origStr);
+            generated.push({
+              level: 'medium', type: 'calc',
+              originalNum: origStr, roundedNum: roundedStr,
+              placeIdx: placeIdx, ans: roundedStr
+            });
+            created = true;
+          } else {
+             // MC 找位值，確保答案唯一
+             if (!isUniquePlaceAnswer(origStr, placeIdx, roundedStr)) continue;
+             usedNums.add(origStr);
+             let options = [3, 4, 5, 6, 7, 8];
+             generated.push({
+              level: 'medium', type: 'mc', mcType: 'find_place',
+              originalNum: origStr, roundedNum: roundedStr,
+              placeIdx: placeIdx, ans: placeIdx.toString(),
+              optionsIdx: options
+            });
+            created = true;
+          }
+        }
+      }
+
+      // --- 高階 (Hard) - 推算真實數值 (MC) ---
+      for (let i = 0; i < 3; i++) {
+         let created = false;
+         while(!created) {
+             const len = getRandomInt(6, 9);
+             const placeIdx = getRandomInt(3, 6); // 千位(3) 到 百萬位(6)
+             const pDataTemp = getPlaceData();
+             const pVal = pDataTemp[placeIdx].val;
+             
+             // 隨機產生一個取近似值後的數字 (例如 740000)
+             let baseDigits = generateDigits(len - placeIdx);
+             let roundedBase = parseInt(digitsToStr(baseDigits), 10);
+             let roundedNum = roundedBase * pVal;
+             let roundedStr = roundedNum.toString();
+             
+             if (usedNums.has(roundedStr)) continue;
+             usedNums.add(roundedStr);
+
+             // 真實範圍: roundedNum - pVal/2 到 roundedNum + pVal/2 - 1
+             let minVal = roundedNum - (pVal / 2);
+             let maxVal = roundedNum + (pVal / 2) - 1;
+             
+             let correctAns = getRandomInt(minVal, maxVal);
+             
+             // 產生干擾項
+             let distractor1 = getRandomInt(minVal - pVal, minVal - 1); // 太小
+             let distractor2 = getRandomInt(maxVal + 1, maxVal + pVal); // 太大
+             
+             // 第三個干擾項：剛好等於 maxVal + 1 (即原本捨去的邊界，例如 .5 變成進位)
+             let distractor3 = maxVal + 1;
+             // 或者隨機產生另一個錯誤範圍
+             if (Math.random() > 0.5) {
+                 distractor3 = getRandomInt(maxVal + 1, maxVal + (pVal/2));
+             }
+
+             let options = shuffle([correctAns, distractor1, distractor2, distractor3]);
+
+             generated.push({
+                 level: 'hard', type: 'mc', mcType: 'find_actual',
+                 roundedNum: roundedStr,
+                 placeIdx: placeIdx,
+                 ans: correctAns.toString(),
+                 optionsValues: options,
+                 minVal: minVal, maxVal: maxVal
+             });
+             created = true;
+         }
+      }
+
+      return generated;
+    }
+
+    function updateQuestionText(q) {
+      const pData = getPlaceData();
+      const promptElem = document.getElementById('question-prompt-text');
+      const numElem = document.getElementById('question-number-display');
+      
+      numElem.classList.remove('hidden');
+
+      if (q.type === 'calc') {
+        let pName = pData[q.placeIdx].name;
+        promptElem.innerHTML = currentLang === 'zh' 
+            ? `將以下數值取近似值至 <span style="color:#2b6cb0; font-size:1.6rem; margin:0 5px;">${pName}</span>：`
+            : `Round the following number to the nearest <span style="color:#2b6cb0; font-size:1.6rem; margin:0 5px;">${pName}</span>:`;
+        numElem.innerText = q.originalNum;
+      } 
+      else if (q.mcType === 'find_place') {
+        if (currentLang === 'zh') {
+           promptElem.innerHTML = `將 <span style="color:#1a365d; font-weight:bold;">${q.originalNum}</span> 取近似值至<span style="color:#e53e3e;">甚麼位值</span>，<br>會得出 <span style="color:#2b6cb0; font-weight:bold;">${q.roundedNum}</span>？`;
+        } else {
+           promptElem.innerHTML = `To <span style="color:#e53e3e;">what place value</span> is <span style="color:#1a365d; font-weight:bold;">${q.originalNum}</span> rounded<br>to get <span style="color:#2b6cb0; font-weight:bold;">${q.roundedNum}</span>?`;
+        }
+        numElem.classList.add('hidden');
+      }
+      else if (q.mcType === 'find_actual') {
+        let pName = pData[q.placeIdx].name;
+        if (currentLang === 'zh') {
+           promptElem.innerHTML = `某數值取近似值至 <span style="color:#2b6cb0; font-weight:bold;">${pName}</span> 約為 <span style="color:#1a365d; font-weight:bold;">${q.roundedNum}</span>。<br>該真實的數值可能是：`;
+        } else {
+           promptElem.innerHTML = `A number rounded to the nearest <span style="color:#2b6cb0; font-weight:bold;">${pName}</span> is <span style="color:#1a365d; font-weight:bold;">${q.roundedNum}</span>.<br>The actual number could be:`;
+        }
+        numElem.classList.add('hidden');
+      }
+    }
+
+    function renderMCOptions(q) {
+      const pData = getPlaceData();
+      const mcArea = document.getElementById('mc-mode-area');
+      mcArea.innerHTML = '';
+      currentSelectedMCOption = null;
+
+      if (q.mcType === 'find_place') {
+         q.optionsIdx.forEach(idx => {
+            const btn = document.createElement('div');
+            btn.className = 'mc-btn';
+            btn.innerText = pData[idx].name;
+            btn.onclick = () => handleMCClick(btn, idx.toString(), q.ans);
+            mcArea.appendChild(btn);
+         });
+      } else if (q.mcType === 'find_actual') {
+         q.optionsValues.forEach(valStr => {
+            const btn = document.createElement('div');
+            btn.className = 'mc-btn';
+            btn.innerText = valStr;
+            btn.onclick = () => handleMCClick(btn, valStr.toString(), q.ans);
+            mcArea.appendChild(btn);
+         });
+      }
+    }
+
+    function startQuiz(mode) {
+      currentMode = mode;
+      questions = generateQuestions();
+      currentQIndex = 0;
+      records = [];
+      startTimeObj = new Date();
+
+      document.getElementById('page-home').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-quiz').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.add('hidden');
+
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      wrongAttempts = 0;
+      currentSelectedMCOption = null;
+      const t = i18n[currentLang];
+      const q = questions[currentQIndex];
+
+      document.getElementById('quiz-mode-name').innerText = t.u1Title;
+      document.getElementById('quiz-progress-text').innerText = `${t.qProgress} ${currentQIndex + 1} / ${questions.length}`;
+
+      const lvlBadge = document.getElementById('quiz-level-badge');
+      lvlBadge.classList.remove('hidden');
+      if (q.level === 'easy') {
+        lvlBadge.className = 'level-badge level-easy';
+        lvlBadge.innerText = t.lvlEasy;
+      } else if (q.level === 'medium') {
+        lvlBadge.className = 'level-badge level-medium';
+        lvlBadge.innerText = t.lvlMed;
+      } else {
+        lvlBadge.className = 'level-badge level-hard';
+        lvlBadge.innerText = t.lvlHard;
+      }
+
+      updateQuestionText(q);
+
+      const inputArea = document.getElementById('input-mode-area');
+      const mcArea = document.getElementById('mc-mode-area');
+      const input = document.getElementById('answer-input');
+      const btnSubmit = document.getElementById('btn-submit');
+
+      document.getElementById('input-prefix-label').innerText = t.inputPrefixAns;
+      
+      if (q.type === 'calc') {
+         inputArea.classList.remove('hidden');
+         mcArea.classList.add('hidden');
+         input.value = '';
+         input.disabled = false;
+         btnSubmit.classList.remove('hidden');
+         setTimeout(() => input.focus(), 100);
+      } else {
+         inputArea.classList.add('hidden');
+         mcArea.classList.remove('hidden');
+         btnSubmit.classList.add('hidden'); // MC 不需要提交按鈕，點擊即作答
+         renderMCOptions(q);
+      }
+
+      document.getElementById('feedback-area').classList.add('hidden');
+      document.getElementById('feedback-area').innerHTML = '';
+      
+      document.getElementById('btn-next').classList.add('hidden');
+      document.getElementById('btn-next').innerText = t.nextBtn;
+      document.getElementById('btn-submit').innerText = t.submitBtn;
+    }
+
+    function getSolutionHTML(q) {
+      const t = i18n[currentLang];
+      const pData = getPlaceData();
+      let html = '';
+      let correctDisplayAns = q.ans;
+
+      if (q.type === 'calc') {
+         let pName = pData[q.placeIdx].name;
+         let rightPlaceName = pData[q.placeIdx - 1]?.name || (currentLang==='zh'?'右邊一位':'digit to the right');
+         let targetDigitIdx = q.originalNum.length - 1 - q.placeIdx;
+         let rightDigitIdx = targetDigitIdx + 1;
+         let rightDigit = q.originalNum[rightDigitIdx];
+         let isCarry = parseInt(rightDigit) >= 5;
+         
+         let stepText = currentLang === 'zh'
+            ? `尋找 <span class="high-light-num">${pName}</span>，觀察它右邊（${rightPlaceName}）的數字是 <span class="high-light-num">${rightDigit}</span>。<br>`
+            : `Find the <span class="high-light-num">${pName}</span> place, look at the digit to its right (${rightPlaceName}) which is <span class="high-light-num">${rightDigit}</span>.<br>`;
+            
+         if (isCarry) {
+            stepText += currentLang === 'zh' 
+               ? `因為 ${rightDigit} 大於或等於 5，所以需要向 ${pName} <span style="color:#276749;font-weight:bold;">進 1</span>，並將右邊的位值全部變為 0。`
+               : `Since ${rightDigit} ≥ 5, we <span style="color:#276749;font-weight:bold;">round up (add 1)</span> to the ${pName} place, and change all digits to the right to 0.`;
+         } else {
+            stepText += currentLang === 'zh'
+               ? `因為 ${rightDigit} 小於或等於 4，所以 <span style="color:#c53030;font-weight:bold;">捨去</span> 尾數，將右邊的位值全部變為 0。`
+               : `Since ${rightDigit} ≤ 4, we <span style="color:#c53030;font-weight:bold;">round down</span>, keeping the digit and changing all digits to the right to 0.`;
+         }
+
+         html = `
+          <div class="vertical-solution-card">
+            <div class="solution-header">${t.solutionTitle}</div>
+            <div class="solution-sub">${t.solutionSubCalc}</div>
+            <div class="step-box">
+              原數：${q.originalNum}<br>
+              ${stepText}
+            </div>
+            <div class="solution-footer-ans">${t.correctAnsIs} <strong style="color:#e53e3e; font-size:1.3rem;">${q.ans}</strong></div>
+            <div class="solution-footer-tip">${t.footerTip}</div>
+          </div>
+        `;
+      } 
+      else if (q.mcType === 'find_place') {
+         let pName = pData[parseInt(q.ans)].name;
+         correctDisplayAns = pName;
+         
+         let stepText = currentLang === 'zh'
+            ? `比較原數 <span class="high-light-num">${q.originalNum}</span> 與近似值 <span class="high-light-num">${q.roundedNum}</span>。<br>可以發現從 <strong>${pName}</strong> 開始，右邊所有的數字都變成了 0。根據四捨五入的規則，這代表數字被取值至 ${pName}。`
+            : `Compare the original <span class="high-light-num">${q.originalNum}</span> and rounded <span class="high-light-num">${q.roundedNum}</span>.<br>Notice that starting from the <strong>${pName}</strong> place, all digits to the right became 0. This means the number was rounded to the nearest ${pName}.`;
+
+         html = `
+          <div class="vertical-solution-card">
+            <div class="solution-header">${t.solutionTitle}</div>
+            <div class="solution-sub">${t.solutionSubPlace}</div>
+            <div class="step-box">${stepText}</div>
+            <div class="solution-footer-ans">${t.correctAnsIs} <strong style="color:#e53e3e; font-size:1.3rem;">${pName}</strong></div>
+            <div class="solution-footer-tip">${t.footerTip}</div>
+          </div>
+        `;
+      }
+      else if (q.mcType === 'find_actual') {
+         let pName = pData[q.placeIdx].name;
+         
+         let optionsListHTML = '<div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">';
+         
+         q.optionsValues.forEach(optVal => {
+             let roundedOpt = roundNumberStr(optVal.toString(), q.placeIdx);
+             let isCorrectOpt = (optVal.toString() === q.ans);
+             let colorStyle = isCorrectOpt ? 'color:#276749; font-weight:bold;' : 'color:#c53030;';
+             let icon = isCorrectOpt ? '✅' : '❌';
+             
+             if (currentLang === 'zh') {
+                 optionsListHTML += `<div style="${colorStyle}">• ${optVal} 取近似值至${pName}為 <strong>${roundedOpt}</strong> ${icon}</div>`;
+             } else {
+                 optionsListHTML += `<div style="${colorStyle}">• ${optVal} rounded to ${pName} is <strong>${roundedOpt}</strong> ${icon}</div>`;
+             }
+         });
+         optionsListHTML += '</div>';
+
+         let stepText = currentLang === 'zh'
+            ? `我們將四個選項分別取近似值至 <span class="high-light-num">${pName}</span>：<br>${optionsListHTML}`
+            : `Let's round all 4 options to the nearest <span class="high-light-num">${pName}</span>:<br>${optionsListHTML}`;
+
+         html = `
+          <div class="vertical-solution-card">
+            <div class="solution-header">${t.solutionTitle}</div>
+            <div class="solution-sub">${t.solutionSubHard}</div>
+            <div class="step-box">${stepText}</div>
+            <div class="solution-footer-ans">${t.correctAnsIs} <strong style="color:#e53e3e; font-size:1.3rem;">${q.ans}</strong></div>
+            <div class="solution-footer-tip">${t.footerTip}</div>
+          </div>
+        `;
+      }
+      
+      return { html, correctDisplayAns };
+    }
+
+    function processAnswer(userAnsValStr, isMC, btnElement = null) {
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+      const feedback = document.getElementById('feedback-area');
+      const input = document.getElementById('answer-input');
+
+      const isCorrect = userAnsValStr === q.ans;
+
+      if (!records[currentQIndex]) {
+        records[currentQIndex] = {
+          qIndex: currentQIndex + 1,
+          questionObj: q,
+          targetAns: q.ans,
+          userFirstWrong: null,
+          isCorrectOnFirstTry: false,
+          solved: false
+        };
+      }
+
+      if (isMC) {
+         const buttons = document.querySelectorAll('.mc-btn');
+         buttons.forEach(b => b.style.pointerEvents = 'none'); // Disable clicking
+         
+         if (isCorrect) {
+             btnElement.classList.add('correct-ans');
+         } else {
+             btnElement.classList.add('selected-wrong');
+             // Highlight correct answer
+             buttons.forEach(b => {
+                 let bVal = q.mcType === 'find_place' 
+                    ? getPlaceData().findIndex(p => p.name === b.innerText).toString()
+                    : b.innerText;
+                 if (bVal === q.ans) b.classList.add('correct-ans');
+             });
+         }
+      } else {
+         input.disabled = true;
+         document.getElementById('btn-submit').classList.add('hidden');
+      }
+
+      if (isCorrect) {
+        if (wrongAttempts === 0) records[currentQIndex].isCorrectOnFirstTry = true;
+        records[currentQIndex].solved = true;
+
+        const randomPraise = t.praise[Math.floor(Math.random() * t.praise.length)];
+        feedback.className = "feedback-box feedback-success";
+        feedback.innerHTML = `<strong>${randomPraise}</strong>`;
+        feedback.classList.remove('hidden');
+        
+        document.getElementById('btn-next').classList.remove('hidden');
+        document.getElementById('btn-next').focus();
+
+      } else {
+        wrongAttempts++;
+        
+        let displayWrongAns = userAnsValStr;
+        if (q.mcType === 'find_place') {
+            displayWrongAns = getPlaceData()[parseInt(userAnsValStr)]?.name || userAnsValStr;
+        }
+
+        if (records[currentQIndex].userFirstWrong === null) {
+          records[currentQIndex].userFirstWrong = displayWrongAns;
+        }
+
+        // 由於這類題目判斷性強，錯一次就直接給詳解，避免學生盲目猜測（特別是 MC）
+        // 如果是計算題，可以給一次提示機會
+        if (!isMC && wrongAttempts < 2) {
+          const randomEnc = t.encourage[Math.floor(Math.random() * t.encourage.length)];
+          let hintText = q.level === 'medium' ? t.hintMedCalc : t.hintEasyCalc;
+
+          feedback.className = "feedback-box feedback-warning";
+          feedback.innerHTML = `
+            <div><strong>${randomEnc}</strong></div>
+            <div style="margin-top:6px; font-size:0.95rem; color:#744210;">${hintText}</div>
+          `;
+          feedback.classList.remove('hidden');
+
+          input.disabled = false;
+          input.value = '';
+          input.focus();
+          document.getElementById('btn-submit').classList.remove('hidden');
+
+        } else {
+          // 直接顯示解題卡片
+          const sol = getSolutionHTML(q);
+          
+          if (!isMC && records[currentQIndex].targetAns !== sol.correctDisplayAns) {
+             records[currentQIndex].targetAns = sol.correctDisplayAns;
+          }
+          if (q.mcType === 'find_place' || q.mcType === 'find_actual') {
+             records[currentQIndex].targetAns = sol.correctDisplayAns;
+          }
+
+          feedback.className = "feedback-box feedback-danger";
+          feedback.innerHTML = sol.html;
+          feedback.classList.remove('hidden');
+
+          document.getElementById('btn-next').classList.remove('hidden');
+          document.getElementById('btn-next').focus();
+        }
+      }
+    }
+
+    function checkInputAnswer() {
+      const input = document.getElementById('answer-input');
+      const valStr = input.value.trim().replace(/,/g, ''); // 容許輸入逗號
+      if (valStr === '') return;
+      processAnswer(valStr, false);
+    }
+
+    function handleMCClick(btnElement, valStr, targetAnsStr) {
+      if (records[currentQIndex] && records[currentQIndex].solved) return;
+      if (wrongAttempts > 0 && questions[currentQIndex].type === 'mc') return; // MC 錯一次直接鎖定看詳解
+      processAnswer(valStr, true, btnElement);
+    }
+
+    function nextQuestion() {
+      currentQIndex++;
+      if (currentQIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showReport();
+      }
+    }
+
+    function formatDate(d) {
+      const pad = (n) => n.toString().padStart(2, '0');
+      const dateStr = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+      const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      return `${dateStr} ${timeStr}`;
+    }
+
+    function formatDuration(start, end) {
+      const diffInSeconds = Math.max(0, Math.floor((end - start) / 1000));
+      const mins = Math.floor(diffInSeconds / 60);
+      const secs = diffInSeconds % 60;
+
+      if (currentLang === 'en') {
+        if (mins > 0) return `${mins} min ${secs} sec`;
+        return `${secs} sec`;
+      } else {
+        if (mins > 0) return `${mins}分鐘${String(secs).padStart(2, '0')}秒`;
+        return `${secs}秒`;
+      }
+    }
+
+    function showReport() {
+      const endTimeObj = new Date();
+      const t = i18n[currentLang];
+      const pData = getPlaceData();
+
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.remove('hidden');
+
+      document.getElementById('report-main-title').innerText = t.reportTitle;
+      document.getElementById('lbl-start-time').innerText = t.startTime;
+      document.getElementById('lbl-end-time').innerText = t.endTime;
+      document.getElementById('lbl-duration').innerText = t.durationTime;
+      document.getElementById('lbl-total-correct').innerText = t.totalCorrect;
+      document.getElementById('lbl-accuracy').innerText = t.accuracy;
+      document.getElementById('lbl-mastery-title').innerText = t.masteryTitle;
+      document.getElementById('lbl-correct-title').innerText = t.correctTitle;
+      document.getElementById('lbl-wrong-title').innerText = t.wrongTitle;
+
+      document.getElementById('lbl-btn-download').innerText = t.btnDownload;
+      document.getElementById('lbl-btn-retry').innerText = t.btnRetry;
+      document.getElementById('lbl-btn-home').innerText = t.btnHome;
+
+      document.getElementById('val-start-time').innerText = formatDate(startTimeObj);
+      document.getElementById('val-end-time').innerText = formatDate(endTimeObj);
+      document.getElementById('val-duration').innerText = formatDuration(startTimeObj, endTimeObj);
+
+      let correctCount = 0;
+      records.forEach(r => {
+        if (r.isCorrectOnFirstTry) correctCount++;
+        // 確保 targetAns 顯示正確
+        if (r.questionObj.mcType === 'find_place') {
+           r.targetAns = pData[parseInt(r.questionObj.ans)]?.name;
+        }
+      });
+
+      const total = records.length;
+      const accuracyPct = Math.round((correctCount / total) * 100);
+
+      document.getElementById('val-correct-count').innerText = `${correctCount} / ${total}`;
+      document.getElementById('val-accuracy').innerText = `${accuracyPct}%`;
+
+      document.getElementById('report-unit-name').innerText = `1. ${t.u1Title.split('：')[1] || t.u1Title}`;
+      document.getElementById('val-unit-mastery').innerText = `${correctCount} / ${total} (${accuracyPct}%)`;
+
+      const correctContainer = document.getElementById('correct-list-container');
+      correctContainer.innerHTML = '';
+      const correctItems = records.filter(r => r.isCorrectOnFirstTry);
+
+      if (correctItems.length === 0) {
+        correctContainer.innerHTML = `<div style="font-size:0.95rem; color:#718096; padding-left:5px;">${t.noCorrect}</div>`;
+      } else {
+        correctItems.forEach(item => {
+          const qText = t.questionLabel.replace('{n}', item.qIndex);
+          let pTxt = '';
+          if (item.questionObj.type === 'calc') {
+             pTxt = `${item.questionObj.originalNum} ➔ ${pData[item.questionObj.placeIdx].name}`;
+          } else if (item.questionObj.mcType === 'find_place') {
+             pTxt = `${item.questionObj.originalNum} ➔ ${item.questionObj.roundedNum} (?位)`;
+          } else {
+             pTxt = `${item.questionObj.roundedNum} (${pData[item.questionObj.placeIdx].name}) ➔ 尋找真實數值`;
+          }
+          
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'item-card-correct';
+          itemDiv.innerHTML = `
+            <div class="item-q-title"><strong>${qText}</strong> : ${pTxt}</div>
+            <div class="item-ans-text">${t.ansLabel} : ${item.targetAns}</div>
+          `;
+          correctContainer.appendChild(itemDiv);
+        });
+      }
+
+      const wrongContainer = document.getElementById('wrong-list-container');
+      wrongContainer.innerHTML = '';
+      const wrongItems = records.filter(r => !r.isCorrectOnFirstTry);
+
+      if (wrongItems.length === 0) {
+        wrongContainer.innerHTML = `<div style="font-size:0.95rem; color:#38a169; padding-left:5px;">${t.noWrong}</div>`;
+      } else {
+        wrongItems.forEach(item => {
+          const qText = t.questionLabel.replace('{n}', item.qIndex);
+          let pTxt = '';
+          if (item.questionObj.type === 'calc') {
+             pTxt = `${item.questionObj.originalNum} ➔ ${pData[item.questionObj.placeIdx].name}`;
+          } else if (item.questionObj.mcType === 'find_place') {
+             pTxt = `${item.questionObj.originalNum} ➔ ${item.questionObj.roundedNum} (?位)`;
+          } else {
+             pTxt = `${item.questionObj.roundedNum} (${pData[item.questionObj.placeIdx].name}) ➔ 尋找真實數值`;
+          }
+          
+          const userAnsDisplay = item.userFirstWrong !== null ? item.userFirstWrong : '-';
+          
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'item-card-wrong';
+          itemDiv.innerHTML = `
+            <div class="item-q-title"><strong>${qText}</strong> : ${pTxt}</div>
+            <div class="item-ans-text">${t.yourAnsLabel} : ${userAnsDisplay} <br> ${t.ansLabel} : ${item.targetAns}</div>
+          `;
+          wrongContainer.appendChild(itemDiv);
+        });
+      }
+    }
+
+    function downloadReportImage() {
+      const element = document.getElementById('report-card-to-capture');
+      if (!element) return;
+
+      html2canvas(element, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Math_Approximation_Report_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        openModal('提示', '下載失敗，請稍後再試：' + err, '關閉', '確定', closeModal);
+      });
+    }
+
+    function openModal(title, msg, cancelTxt, confirmTxt, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-msg').innerText = msg;
+      document.getElementById('modal-cancel-btn').innerText = cancelTxt;
+      document.getElementById('modal-confirm-btn').innerText = confirmTxt;
+      modalActionCallback = onConfirm;
+      document.getElementById('custom-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('custom-modal').classList.remove('active');
+    }
+
+    function confirmModalAction() {
+      closeModal();
+      if (modalActionCallback) modalActionCallback();
+    }
+
+    function askReturnHome() {
+      const t = i18n[currentLang];
+      openModal(
+        t.modalReturnTitle,
+        t.modalReturnMsg,
+        t.modalCancel || '取消',
+        t.modalStart || '確定',
+        goHome
+      );
+    }
+
+    function retryPractice() {
+      startQuiz(currentMode || 'unit1');
+    }
+
+    function goHome() {
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-home').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.remove('hidden');
+    }
+  </script>
+  <script src="https://mathteacher1618.github.io/my_fixes/ipad_fix.js"></script>
+</body>
+</html>
